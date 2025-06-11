@@ -29,6 +29,9 @@ public class ProjectSecurityConfig {
         http.authorizeHttpRequests(requests -> requests
                 .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards").authenticated()
                 .requestMatchers("/notices", "/contact", "/error").permitAll());
+        // flc is httpSecurityFormLoginConfigurer
+        // We can disable formLogin and httpBasic with lambda expression flc -> flc.disable() instead of withDefaults()
+        // we can rename flc in httpBasic with hbc for clearer meaning even tho both are acronyms
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
         return http.build();
