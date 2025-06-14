@@ -6,6 +6,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -43,8 +46,21 @@ public class ProjectSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
+        // We haven't implemented passwordEncoder so we need to specify {noop} in password method for it to successfully login
+        // Now we did so .password("{noop}12345") becomes .password("12345")
+        // we can use {different Encryptions like MD4}
         UserDetails user = User.withUsername("user").password("{noop}12345").authorities("read").build();
-        UserDetails admin = User.withUsername("admin").password("{noop}54321").authorities("admin").build();
+        UserDetails admin = User.withUsername("admin")
+                .password("{bcrypt}$2a$12$fbawcFvyWHKTHK5KXkd4Ju4XW3TjZnLY1bC0PlpVRhTP1uTpB14PO")
+                .authorities("admin").build();
         return new InMemoryUserDetailsManager(user, admin);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // It is possible to directly return new BCryptPasswordEncoder(); but lower approach better because in few years maybe bcrypt isn't recommended
+        // Uses BCrypt Encoder as it is the safest or at least so is thought
+        // Default is 12 rounds of salt
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
