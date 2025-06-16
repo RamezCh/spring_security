@@ -2,6 +2,7 @@ package com.github.ramezch.spring_security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -62,5 +64,15 @@ public class ProjectSecurityConfig {
         // Uses BCrypt Encoder as it is the safest or at least so is thought
         // Default is 12 rounds of salt
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    // What if I want users to implement secure passwords and not ones like 12345, 54321, password?
+    // This is where the CompromisedPasswordChecker comes in
+    // One of the methods is to use Have I been Pwned API to check if the password was in a previous data breach
+    // We can also pass our own implementation instead of Have I been pwned and return if it has been leaked or not
+    // Now the above users won't be able to login because they weren't created due to compromised passwords
+    @Bean
+    public CompromisedPasswordChecker compromisedPasswordChecker() {
+        return new HaveIBeenPwnedRestApiPasswordChecker();
     }
 }
