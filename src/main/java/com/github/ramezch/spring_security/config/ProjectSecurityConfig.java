@@ -51,9 +51,9 @@ public class ProjectSecurityConfig {
         // We haven't implemented passwordEncoder so we need to specify {noop} in password method for it to successfully login
         // Now we did so .password("{noop}12345") becomes .password("12345")
         // we can use {different Encryptions like MD4}
-        UserDetails user = User.withUsername("user").password("{noop}12345").authorities("read").build();
+        UserDetails user = User.withUsername("user").password("{noop}Hackerman@12345").authorities("read").build();
         UserDetails admin = User.withUsername("admin")
-                .password("{bcrypt}$2a$12$fbawcFvyWHKTHK5KXkd4Ju4XW3TjZnLY1bC0PlpVRhTP1uTpB14PO")
+                .password("{bcrypt}$2a$12$LlpKC7mgEN8jE.d9PFDtx.t3vbJgjlLnyLPZ96l0gpYJFWnxSITYy")
                 .authorities("admin").build();
         return new InMemoryUserDetailsManager(user, admin);
     }
@@ -71,6 +71,7 @@ public class ProjectSecurityConfig {
     // One of the methods is to use Have I been Pwned API to check if the password was in a previous data breach
     // We can also pass our own implementation instead of Have I been pwned and return if it has been leaked or not
     // Now the above users won't be able to login because they weren't created due to compromised passwords
+    // I changed the above passwords from 12345 to Hackerman@12345 so now it will work
     @Bean
     public CompromisedPasswordChecker compromisedPasswordChecker() {
         return new HaveIBeenPwnedRestApiPasswordChecker();
