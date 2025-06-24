@@ -17,7 +17,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class ProjectSecurityConfig {
-
+    // Ctrl + Alt + O deletes all unused imports
+    // You can let intelliJ do this automatically by setting optimize imports on the fly to true
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
@@ -33,6 +34,8 @@ public class ProjectSecurityConfig {
     // so it knows how to connect to DB and load the users
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource) {
+        // This uses the exact tables present in Jdbc which is users and authorities
+        // We want our own custom tables right?
         return new JdbcUserDetailsManager(dataSource);
     }
 
