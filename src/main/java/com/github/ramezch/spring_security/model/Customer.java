@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter @Setter
 // Ctrl + F12 to see generated methods and file structure
 public class Customer {
-    @Id // This tells jpa framework know its primary key the Id
+    @Id // This tells jpa framework to know its primary key the Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Indicates that the database will auto-generate the primary key value (e.g., using AUTO_INCREMENT or SERIAL).
     // JPA will not assign a value; instead, it retrieves the generated value after inserting the entity
     private long id;
