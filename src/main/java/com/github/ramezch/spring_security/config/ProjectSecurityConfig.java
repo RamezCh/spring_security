@@ -28,19 +28,6 @@ public class ProjectSecurityConfig {
         return http.build();
     }
 
-    // Since we are connected to DB now we do not need to provide users manually
-    // JdbcUserDetailsManager takes the dataSource that is created from application.properties that we set
-    // so it knows how to connect to DB and load the users
-    /*
-    Commented out because we implemented custom table at WhateverYouWantUserDetailsService class
-    @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource) {
-        // This uses the exact tables present in Jdbc which is users and authorities
-        // We want our own custom tables right?
-        return new JdbcUserDetailsManager(dataSource);
-    }
-    */
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
