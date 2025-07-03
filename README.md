@@ -89,7 +89,7 @@ We should use salts. For example, if the password is '12345' the backend generat
 
 All are encoded into a single string for easy storage and verification. However, this approach alone primarily helps prevent precomputed attacks like rainbow tables (each password has a unique salt value so no longer all similar hashes) and does not protect against weak passwords being guessed through brute-force or dictionary attacks.
 
-What else could we do for brute force and dictionary attacks?
+### What else could we do for brute force and dictionary attacks?
 
 We can set a maximum of three login attempts and impose password restrictions, such as requiring at least eight characters including numbers, letters, and special characters.
 
@@ -97,4 +97,12 @@ To protect against brute-force attacks, we can use adaptive password hashing alg
 
 For legitimate users, this delay is negligible since login events are infrequent, and users are usually kept authenticated via session tokens after the initial login. Even in cases where a user does log in manually, a short delay of one or two seconds doesn’t negatively impact the user experience.
 
-This trade-off makes such algorithms ideal for securely storing passwords in modern systems. 
+This trade-off makes such algorithms ideal for securely storing passwords in modern systems.
+
+## PasswordEncoder in Spring Security
+
+The PasswordEncoder interface includes an encode method which accepts a CharSequence (the raw password) and returns its hashed representation as a String.
+
+Another important method is matches, which takes two parameters: rawPassword (as a CharSequence) and encodedPassword (as a String). It returns a boolean indicating whether the provided raw password, when encoded, matches the stored encoded password. This method is used during authentication to verify user credentials.
+
+The last method is upgradeEncoding that takes encodedPassword as String and checks if it should be encoded again for better security and if so, returns true else false. By default, a single time hashing along a salt value is enough.
