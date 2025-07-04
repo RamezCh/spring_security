@@ -106,3 +106,35 @@ The PasswordEncoder interface includes an encode method which accepts a CharSequ
 Another important method is matches, which takes two parameters: rawPassword (as a CharSequence) and encodedPassword (as a String). It returns a boolean indicating whether the provided raw password, when encoded, matches the stored encoded password. This method is used during authentication to verify user credentials.
 
 The last method is upgradeEncoding that takes encodedPassword as String and checks if it should be encoded again for better security and if so, returns true else false. By default, a single time hashing along a salt value is enough.
+
+### DelegatingPasswordEncoder
+
+It uses the default password encoder setup by the framework. At this time it is bcrypt
+
+### NoOpPasswordEncoder
+
+This is a deprecated encoder used for demo purposes and NOT in production. It does not hash the password or anything. It just returns the raw Password input.
+
+### StandardPasswordEncoder
+
+This is deprecated as well. It uses SHA-256 hashing with 1024 iterations and a random 8-byte salt value. This is no longer strong due to advancements in CPU and GPU systems.
+
+### Pbkdf2PasswordEncoder
+
+Has a default salt value of 16 bytes and the number of iterations 310 thousand. These settings are configurable. The more iterations, the longer the hash process, the slower the hacks can iterate. You can also add a secret key using .SecretKeyFactoryAlgorithm.
+
+This password encoder strength depends on the secret key and the function you provide, so it is not strong and not recommended in production.
+
+### BCryptPasswordEncoder
+
+It has three different versions 2a, 2b, 2y. We can select one of them or let the Spring Security use the default version. The strength parameter is a value between 4 and 31. The higher, the stronger. It sets the number of log rounds to use.
+
+The default strength value is 10.
+
+### SCryptPasswordEncoder
+
+It is an advanced hashing method of BCrypt. You can set the CPU cost, Memory Cost, and parallelization parameter. This makes the hacker's life much harder.
+
+### Argon2PasswordEncoder
+
+Is even a more advanced hashing algorithm of SCryptPasswordEncoder offering similar parameters which won the most secure hashing algorithm contest.
