@@ -13,9 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!prod") // Activated when the profile is not prod
+@Profile("prod") // only activated when we have prod profile set
 @RequiredArgsConstructor
-public class UsernamePwdAuthenticationProvider implements AuthenticationProvider {
+public class ProdUsernamePwdAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -31,9 +31,25 @@ public class UsernamePwdAuthenticationProvider implements AuthenticationProvider
         if (userDetails == null) {
             throw new BadCredentialsException("Invalid username or password!");
         }
-        // We want to make life easier for QAs and Devs so we do not check for password
-        return new UsernamePasswordAuthenticationToken(username, rawPassword, userDetails.getAuthorities());
-
+        // rawPassword.equals(userDetails.getPassword() won't work because remember its hashed in the DB and not raw text
+        /*
+        String hashedPwd = passwordEncoder.encode(rawPassword);
+        if( hashedPwd.equals(userDetails.getPassword())) {
+            authentication.setAuthenticated(true);
+            return authentication;
+        }
+        the above approach won't work either because each password has a unique salt so we need to use passwordEncoder.matches method
+         */
+        if (passwordEncoder.matches(rawPassword, userDetails.getPassword())) {
+            // We can add custom authentication here like age restrictions or location restrictions and so on.
+            return new UsernamePasswordAuthenticationToken(
+                    username,
+                    rawPassword,
+                    userDetails.getAuthorities()
+            );
+        } else {
+            throw new BadCredentialsException("Invalid username or password!");
+        }
     }
 
     @Override
