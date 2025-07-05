@@ -47,7 +47,7 @@ public class ProjectSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // We haven't implemented passwordEncoder so we need to specify {noop} in password method for it to successfully login
+        // We haven't implemented passwordEncoder, so we need to specify {noop} in the password method for it to successfully log in
         // Now we did so .password("{noop}12345") becomes .password("12345")
         // we can use {different Encryptions like MD4}
         UserDetails user = User.withUsername("user").password("{noop}Hackerman@12345").authorities("read").build();
