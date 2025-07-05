@@ -53,3 +53,19 @@ In real enterprise applications, you’ll often see multiple authentication mech
 - JAAS (Java Authentication and Authorization Service) for legacy system integration
 
 Each of these requires its own AuthenticationProvider implementation.
+
+### Throughout the development of the project, there are different phases.
+- DEV = Development
+- SIT = System Integration Testing
+- UAT = User Acceptance Testing (Real users test the software to see if it meets their needs)
+- PROD = Production
+
+Dev, SIT, UAT are called Lower environments because this is where testing happens.
+
+Regardless of what phase you are at, the user will be required to enter his credentials during log in.
+
+The difference is in PROD we have real users and Lower environments we have Devs, QAs and so on
+
+Usually, in Lower environments they ask us for fixed credentials so they have an easier workflow by accessing the application with any password.
+
+Inside Spring Boot we have a Profiles concept that runs things conditionally which we can use to let Lower environments users enter any password and login.
