@@ -14,8 +14,8 @@ import org.springframework.security.web.authentication.password.HaveIBeenPwnedRe
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@Profile("!prod")
-public class ProjectSecurityConfig {
+@Profile("prod")
+public class ProjectSecurityProdConfig {
     // Ctrl + Alt + O deletes all unused imports
     // You can let intelliJ do this automatically by setting optimize imports on the fly to true
     @Bean
