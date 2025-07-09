@@ -2,70 +2,29 @@
 
 This is a test field where I apply different security principles and methods starting from the most basic to advanced.
 
-## AuthenticationProvider
-The default one is DaoAuthenticationProvider, which works well for standard username/password authentication. However, in certain cases, we may need to implement our own custom AuthenticationProvider.
+## HTTPS
+Any user on a web application or mobile would look for HTTPS to feel the sense of security.
 
-### What is an AuthenticationProvider?
-It’s a core interface in Spring Security that handles user authentication. It has only two methods:
+The default behavior is accepting both HTTP and HTTPS, but we want only HTTPS. Turning it on is straightforward. We just add redirectToHttps(withDefaults()) to the defaultSecurityFilterChain.
 
-- authenticate (Authentication authentication):
-Takes an Authentication object (which contains credentials like username and password) and verifies if the user is valid. If successful, returns a fully populated Authentication object with authenticated = true.
-- supports (Class<?> authentication):
-Checks whether this provider can handle the given type of Authentication object. For example, UsernamePasswordAuthenticationToken.
+## Exception Handling in Spring Security Framework
+Spring Security provides a robust and flexible mechanism for handling exceptions that occur during authentication and authorization processes. Unlike general application exceptions, Spring Security only directly handles security-related exceptions, specifically those related to authentication failures and access control violations.
 
-### How Does ProviderManager Know Which Provider to Use?
-Spring Security uses the ProviderManager, which is responsible for delegating authentication requests to the correct AuthenticationProvider.
+The core component responsible for this behavior is the ExceptionTranslationFilter. This filter sits early in the Spring Security filter chain and acts as a global exception handler for security-related issues.
 
-It identifies the right provider by checking each one’s supports() method against the incoming Authentication object’s class type.
+### How It Works: The Flow
+When a request passes through the Spring Security filter chain, any unhandled exception (especially those thrown by security components) is caught by the ExceptionTranslationFilter.
+This filter inspects the type of exception:
+1. If it’s an instance of AuthenticationException (401), it indicates that the user is not authenticated.
+2. If it’s an instance of AccessDeniedException (403), it means the user is authenticated but lacks enough permissions to access the requested resource.
 
-### Common Authentication Tokens
-There are several types of Authentication tokens used in different scenarios:
+Based on the exception type, the filter delegates to the appropriate strategy:
+- For AuthenticationException: Invokes the AuthenticationEntryPoint
+- For AccessDeniedException: Invokes the AccessDeniedHandler
 
-- UsernamePasswordAuthenticationToken: Used for standard login forms.
-- TestingAuthenticationToken: For unit testing purposes only.
-- RememberMeAuthenticationToken: When the "Remember Me" functionality is enabled.
-- AnonymousAuthenticationToken: Represents unauthenticated users.
-- OAuth2AuthenticationToken: For OAuth2-based authentication.
-- JwtAuthenticationToken: For JWT token-based systems.
+## Authentication Entry Point
+It is used by ExceptionTranslationFilter and has only a single abstract method commence. There are multiple implementations of this class like BasicAuthenticationEntryPoint.
 
-**Note**: As of now, only DaoAuthenticationProvider supports UsernamePasswordAuthenticationToken.
+If we want to customize the response from AuthenticationException, we create a new clas that implements AuthenticationEntryPoint class.
 
-### When Do We Need a Custom AuthenticationProvider?
-While DaoAuthenticationProvider works well for basic authentication, it does not support custom business rules or complex conditions. You should create your own AuthenticationProvider when you need to enforce:
 
-- Group restrictions (e.g., specific roles or departments).
-- Age limits.
-- Country or location-based access control.
-- Device-specific authentication.
-- Multifactor authentication logic.
-
-This allows you to add additional checks beyond just username and password validation.
-
-### Quick Workflow Summary
-User logs in → Request is intercepted by Spring Security filters → Reaches ProviderManager → Manager determines which AuthenticationProvider to use based on the type of Authentication object → Provider performs the actual authentication.
-
-### Real-World Implementations
-
-In real enterprise applications, you’ll often see multiple authentication mechanisms implemented together. These may include:
-
-- Standard username & password (done here)
-- OAuth2 for third-party or social logins
-- JAAS (Java Authentication and Authorization Service) for legacy system integration
-
-Each of these requires its own AuthenticationProvider implementation.
-
-### Throughout the development of the project, there are different phases.
-- DEV = Development
-- SIT = System Integration Testing
-- UAT = User Acceptance Testing (Real users test the software to see if it meets their needs)
-- PROD = Production
-
-Dev, SIT, UAT are called Lower environments because this is where testing happens.
-
-Regardless of what phase you are at, the user will be required to enter his credentials during log in.
-
-The difference is in PROD we have real users and Lower environments we have Devs, QAs and so on
-
-Usually, in Lower environments they ask us for fixed credentials so they have an easier workflow by accessing the application with any password.
-
-Inside Spring Boot we have a Profiles concept that runs things conditionally which we can use to let Lower environments users enter any password and login.

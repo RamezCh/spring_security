@@ -21,7 +21,9 @@ public class ProjectSecurityProdConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         // disabled cross-site request forgery for postman - will implement it later
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .redirectToHttps(withDefaults()) // forces HTTPS for all requests
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/myAccount", "/myBalance", "/myLoans", "/myCards").authenticated()
                 .requestMatchers("/notices", "/contact", "/error", "/register").permitAll());
